@@ -47,7 +47,12 @@
         inspec_bin: "C:/opscode/inspec/bin"
         inspec_download_source_dir: "C:/temp"
         inspec_test_directory: "C:/temp/tests"
-        when: ansible_os_family == "Windows"
+        ansible_user: 'ansible'
+        ansible_password: 'Ansible1!'
+        ansible_port: 5985
+        ansible_connection: winrm
+        ansible_winrm_transport: basic
+      when: ansible_os_family == "Windows"
 
     - name: Download Inspec (Linux)
       get_url:
