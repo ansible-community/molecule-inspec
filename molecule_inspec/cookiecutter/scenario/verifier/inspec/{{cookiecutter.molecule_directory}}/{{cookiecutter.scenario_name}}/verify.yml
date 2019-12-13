@@ -42,12 +42,20 @@
         inspec_download_sha256sum: 5a8c6253b90d44e1e4059f495f1fdfa4c0491ce75ecf9fc37fc905c26f5a43d7
       when: ansible_os_family == "Debian" and (ansible_distribution_major_version == "9" or ansible_distribution_version == "18.04")
 
-    - name: Download Inspec
+    - name: Setting variables (Windows)
+      set_fact:
+        inspec_bin: "C:/opscode/inspec/bin"
+        inspec_download_source_dir: "C:/temp"
+        inspec_test_directory: "C:/temp/tests"
+        when: ansible_os_family == "Windows"
+
+    - name: Download Inspec (Linux)
       get_url:
         url: "{{ inspec_download_url }}"
         dest: "{{ inspec_download_source_dir }}"
         sha256sum: "{{ inspec_download_sha256sum }}"
         mode: 0755
+        when: ansible_os_family != "Windows"
 
     - name: Install Inspec (apt)
       apt:
@@ -61,18 +69,41 @@
         state: present
       when: ansible_pkg_mgr == "yum"
 
-    - name: Create Molecule directory for test files
+    - name: Install Inspec (Chocolatey)
+      win_chocolatey:
+        name: 'inspec'
+        state: 'present'
+      when: ansible_os_family == "Windows"
+
+    - name: Create Molecule directory for test files (Linux)
       file:
         path: "{{ inspec_test_directory }}"
         state: directory
+      when: ansible_os_family != "Windows"
 
-    - name: Copy Inspec tests to remote
+    - name: Create Molecule directory for test files (Windows)
+      win_file:
+        path: "{{ inspec_test_directory }}"
+        state: directory
+      when: ansible_os_family == "Windows"
+
+    - name: Copy Inspec tests to remote (Linux)
       copy:
         src: "{{ item }}"
         dest: "{{ inspec_test_directory }}/{{ item | basename }}"
       register: copy_inspec_tests
       with_fileglob:
         - "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}/test_*.rb"
+      when: ansible_os_family != "Windows"
+
+    - name: Copy Inspec tests to remote (Windows)
+      win_copy:
+        src: "{{ item }}"
+        dest: "{{ inspec_test_directory }}/{{ item | basename }}"
+      register: copy_inspec_tests
+      with_fileglob:
+        - "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}/test_*.rb"
+      when: ansible_os_family == "Windows"
 
     - name: Execute Inspec tests
       command: "{{ inspec_bin }} exec {{ item.dest }}"
@@ -80,6 +111,17 @@
       with_items: "{{ copy_inspec_tests.results }}"
       changed_when: test_results.changed
       ignore_errors: true
+      when: ansible_os_family != "Windows"
+
+    - name: Execute Inspec tests
+      win_shell: "& .\\inspec exec {{ item.dest }} --chef-license=accept-silent"
+      args:
+        chdir: "{{ inspec_bin }}"
+      register: test_results
+      with_items: "{{ copy_inspec_tests.results }}"
+      changed_when: test_results.changed
+      ignore_errors: true
+      when: ansible_os_family == "Windows"
 
     - name: Display details about the Inspec results
       debug:
