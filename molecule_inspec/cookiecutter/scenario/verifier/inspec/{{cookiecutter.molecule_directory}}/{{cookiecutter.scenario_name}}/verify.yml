@@ -3,7 +3,7 @@
 # Tests need distributed to the appropriate ansible host/groups
 # prior to execution by `inspec exec`.
 
-#{% raw -%}
+{% raw -%}
 - name: Verify
   hosts: all
   tasks:
@@ -132,4 +132,4 @@
         msg: "Inspec failed to validate"
       when: item.rc != 0
       with_items: "{{ test_results.results }}"
-#{% endraw -%}
+{% endraw -%}
