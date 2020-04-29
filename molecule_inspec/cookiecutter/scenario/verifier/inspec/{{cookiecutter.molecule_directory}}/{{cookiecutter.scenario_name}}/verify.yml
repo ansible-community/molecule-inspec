@@ -84,6 +84,7 @@
         with_items: "{{ copy_inspec_tests.results }}"
         changed_when: test_results.changed
         ignore_errors: true
+      when: ansible_os_family != "Windows"
 
     - name: Block | Windows operating system
       block:
