@@ -1,14 +1,13 @@
-# Molecule managed
+# test_default
 
-describe directory('/etc/molecule') do
+describe directory('/opt/inspec') do
   its('owner') { should eq 'root' }
   its('group') { should eq 'root' }
   its('mode') { should cmp '0755' }
 end
 
-describe file('/etc/molecule/instance') do
+describe file('/opt/inspec/bin/inspec') do
   its('owner') { should eq 'root' }
   its('group') { should eq 'root' }
-  its('mode') { should cmp '0644' }
-  its('content') { should match(/instance/) }
+  its('mode') { should cmp '0755' }
 end
