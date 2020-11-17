@@ -22,12 +22,12 @@ language: python
 .mixtures:  # is not used by Travis CI, but helps avoid duplication
   - &if-cron-or-manual-run-or-tagged
     if: type IN (cron, api) OR tag IS present
-  - &py-27
-    python: "2.7"
   - &py-36
     python: "3.6"
   - &py-37
     python: "3.7"
+  - &py-38
+    python: "3.8"
   - &reset-prerequisites
     addons: {}
     before_install:
@@ -35,7 +35,7 @@ language: python
     before_script: []
     services: []
   - &lint
-    <<: *py-37
+    <<: *py-38
     <<: *reset-prerequisites
 
 jobs:
@@ -45,9 +45,14 @@ jobs:
     - <<: *lint
       name: linting the code
       env:
-        - TOXENV=lint,check
+        - TOXENV=lint
+
+    - <<: *py-38
+      env:
+        - TOXENV=devel
 
     - <<: *py-37
+      <<: *if-cron-or-manual-run-or-tagged
       env:
         - TOXENV=devel
 
@@ -56,60 +61,9 @@ jobs:
       env:
         - TOXENV=devel
 
-    - <<: *py-27
-      env:
-        - TOXENV=devel
-
-    - <<: *py-37
-      env:
-        - TOXENV=ansible29
-      name: py37-ansible29
-
-    - <<: *py-37
-      env:
-        - TOXENV=ansible28
-      name: py37-ansible28
-
-    - <<: *py-37
-      env:
-        - TOXENV=ansible27
-      name: py37-ansible27
-
-    - <<: *py-36
-      <<: *if-cron-or-manual-run-or-tagged
-      env:
-        - TOXENV=ansible29
-      name: py36-ansible29
-
-    - <<: *py-36
-      <<: *if-cron-or-manual-run-or-tagged
-      env:
-        - TOXENV=ansible28
-      name: py36-ansible28
-
-    - <<: *py-36
-      <<: *if-cron-or-manual-run-or-tagged
-      env:
-        - TOXENV=ansible27
-      name: py36-ansible27
-
-    - <<: *py-27
-      env:
-        - TOXENV=ansible29
-      name: py27-ansible29
-
-    - <<: *py-27
-      env:
-        - TOXENV=ansible28
-      name: py27-ansible28
-
-    - <<: *py-27
-      env:
-        - TOXENV=ansible27
-      name: py27-ansible27
 
     - &deploy-job
-      <<: *py-37
+      <<: *py-38
       <<: *reset-prerequisites
       stage: Deploy
       name: Publishing current Git tagged version of dist to PyPI

@@ -1,5 +1,6 @@
 extends: default
 ignore: |
+  *.github/workflows/
   *.molecule/
   molecule*/cookiecutter/
   .tox
@@ -13,4 +14,5 @@ rules:
   brackets:
     max-spaces-inside: 1
     level: error
+  document-start: disable
   line-length: disable
