@@ -25,7 +25,7 @@ Molecule Inspec Plugin
    :target: LICENSE
    :alt: Repository License
 
-Molecule Inspec Plugin is designed to allow used of inpec as a verifier.
+Molecule Inspec Plugin is designed to allow used of inspec as a verifier.
 
 Documentation
 =============
