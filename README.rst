@@ -6,8 +6,8 @@ Molecule Inspec Plugin
    :target: https://badge.fury.io/py/molecule-inspec
    :alt: PyPI Package
 
-.. image:: https://img.shields.io/travis/com/pycontribs/molecule-inspec/master.svg?label=Linux%20builds%20%40%20Travis%20CI
-   :target: https://travis-ci.com/pycontribs/molecule-inspec
+.. image:: https://github.com/ansible-community/molecule-inspec/workflows/tox/badge.svg
+   :target: https://github.com/ansible-community/molecule-inspec/actions
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/python/black
@@ -16,10 +16,6 @@ Molecule Inspec Plugin
 .. image:: https://img.shields.io/badge/Code%20of%20Conduct-Ansible-silver.svg
    :target: https://docs.ansible.com/ansible/latest/community/code_of_conduct.html
    :alt: Ansible Code of Conduct
-
-.. image:: https://img.shields.io/badge/Mailing%20lists-Ansible-orange.svg
-   :target: https://docs.ansible.com/ansible/latest/community/communication.html#mailing-list-information
-   :alt: Ansible mailing lists
 
 .. image:: https://img.shields.io/badge/license-MIT-brightgreen.svg
    :target: LICENSE
@@ -32,11 +28,6 @@ Documentation
 
 Read the documentation and more at https://molecule.readthedocs.io/.
 
-Installing dependencies:
-```
-# MacOS
-brew cask install chef/chef/inspec
-```
 
 .. _get-involved:
 
