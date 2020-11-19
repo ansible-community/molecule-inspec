@@ -12,35 +12,35 @@
     inspec_download_source_dir: /usr/local/src
     inspec_test_directory: /tmp/molecule/inspec
   tasks:
-    - name: Setting variables (CentOS 6 / RHEL 6)
+    - name: Setting variables (CentOS 6 / RHEL 6 / Amazon Linux 2018)
       set_fact:
-        inspec_download_url: "https://packages.chef.io/files/stable/inspec/2.2.34/el/6/inspec-2.2.34-1.el6.x86_64.rpm"
-        inspec_download_sha256sum: f507dbaf5632a67ee2e6e112aea7f726c0a3251b4f29b247b320fb1132a1aa41
-      when: (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "6")
+        inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/el/6/inspec-3.9.3-1.el6.x86_64.rpm"
+        inspec_download_sha256sum: 36c8605f3c1a85acd4e2d54ab01b2737832af41126e307fece7989c6332ae534
+      when: (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "6" or ansible_facts['distribution_major_version'] == "2018"))
 
-    - name: Setting variables (CentOS 7 / RHEL 7)
+    - name: Setting variables (CentOS 7 / RHEL 7 / Amazon Linux 2)
       set_fact:
-        inspec_download_url: "https://packages.chef.io/files/stable/inspec/2.2.34/el/7/inspec-2.2.34-1.el7.x86_64.rpm"
-        inspec_download_sha256sum: c3d3fcb89b746f6378e27c0b318f61a8cda8784f4354306a866c70b945d52cec
-      when: (ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "7")
+        inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/el/7/inspec-3.9.3-1.el7.x86_64.rpm"
+        inspec_download_sha256sum: 4d54d12899c2eeaae4812cd13b8dfcae01ec1fd4a44f00cab77e31a57aea502b
+      when: (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "7" or ansible_facts['distribution_major_version'] == "2"))
 
     - name: Setting variables (Debian 8 / Ubuntu 14.04)
       set_fact:
-        inspec_download_url: "https://packages.chef.io/files/stable/inspec/2.2.34/ubuntu/14.04/inspec_2.2.34-1_amd64.deb"
-        inspec_download_sha256sum: 5a8c6253b90d44e1e4059f495f1fdfa4c0491ce75ecf9fc37fc905c26f5a43d7
-      when: (ansible_facts['distribution'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "14.04"))
+        inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/14.04/inspec_3.9.3-1_amd64.deb"
+        inspec_download_sha256sum: fe29d35fb95916b15310dc58787e63f22c4524be36a5c181307e08090cb0877d
+      when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "14"))
 
     - name: Setting variables (Debian 8 / Ubuntu 16.04)
       set_fact:
-        inspec_download_url: "https://packages.chef.io/files/stable/inspec/2.2.34/ubuntu/16.04/inspec_2.2.34-1_amd64.deb"
-        inspec_download_sha256sum: 5a8c6253b90d44e1e4059f495f1fdfa4c0491ce75ecf9fc37fc905c26f5a43d7
-      when: (ansible_facts['distribution'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "16.04"))
+        inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/16.04/inspec_3.9.3-1_amd64.deb"
+        inspec_download_sha256sum: 757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
+      when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "16"))
 
     - name: Setting variables (Debian 9 / Ubuntu 18.04)
       set_fact:
-        inspec_download_url: "https://packages.chef.io/files/stable/inspec/2.2.34/ubuntu/18.04/inspec_2.2.34-1_amd64.deb"
-        inspec_download_sha256sum: 5a8c6253b90d44e1e4059f495f1fdfa4c0491ce75ecf9fc37fc905c26f5a43d7
-      when: (ansible_facts['distribution'] == "Debian" and (ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] == "18.04"))
+        inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/18.04/inspec_3.9.3-1_amd64.deb"
+        inspec_download_sha256sum: 757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
+      when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] == "18"))
 
     - name: Download Inspec
       get_url:
@@ -61,34 +61,33 @@
         state: present
       when: ansible_pkg_mgr == "yum"
 
-    - name: Create Molecule directory for test files
+    - name: Copy inspec test directories
       file:
-        path: "{{ inspec_test_directory }}"
+        path: "{{ inspec_test_directory }}/{{ item.path }}"
         state: directory
+        mode: 0755
+      with_filetree: "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}/"
+      when: item.state == 'directory'
 
-    - name: Copy Inspec tests to remote
+    - name: Copy inspec test files
       copy:
-        src: "{{ item }}"
-        dest: "{{ inspec_test_directory }}/{{ item | basename }}"
-      register: copy_inspec_tests
-      with_fileglob:
-        - "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}/test_*.rb"
+        src: "{{ item.src }}"
+        dest: "{{ inspec_test_directory }}/{{ item.path }}"
+        mode: 0644
+      with_filetree: "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}/"
+      when: item.state == 'file'
 
     - name: Execute Inspec tests
-      command: "{{ inspec_bin }} exec {{ item.dest }}"
+      command: "{{ inspec_bin }} exec {{ inspec_test_directory }}"
       register: test_results
-      with_items: "{{ copy_inspec_tests.results }}"
-      changed_when: test_results.changed
       ignore_errors: true
 
     - name: Display details about the Inspec results
       debug:
-        msg: "{{ item.stdout_lines }}"
-      with_items: "{{ test_results.results }}"
+        msg: "{{ test_results.stdout_lines }}"
 
     - name: Fail when tests fail
       fail:
         msg: "Inspec failed to validate"
-      when: item.rc != 0
-      with_items: "{{ test_results.results }}"
+      when: test_results.rc != 0
 {% endraw -%}
