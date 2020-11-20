@@ -106,7 +106,7 @@ class Inspec(Verifier):
         self._config.provisioner.verify()
 
         msg = "Verifier completed successfully."
-        LOG.success(msg)
+        LOG.info(msg)
 
     def _get_tests(self):
         """
