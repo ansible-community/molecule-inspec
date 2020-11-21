@@ -113,7 +113,7 @@ class Inspec(Verifier):
         Walk the verifier's directory for tests and returns a list.
         :return: list
         """
-        return [filename for filename in util.os_walk(self.directory, "test_*.rb")]
+        return [filename for filename in util.os_walk(self.directory, "*.rb")]
 
     def schema(self):
         return {

@@ -1,4 +1,4 @@
-# test_default
+# install
 
 describe directory('/opt/inspec') do
   its('owner') { should eq 'root' }
