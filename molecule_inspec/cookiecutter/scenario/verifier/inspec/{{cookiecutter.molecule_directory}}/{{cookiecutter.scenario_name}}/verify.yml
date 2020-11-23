@@ -61,6 +61,11 @@
         state: present
       when: ansible_pkg_mgr == "yum"
 
+    - name: Create inspec test directory
+      file:
+        path: "{{ inspec_test_directory }}"
+        state: directory
+
     - name: Copy inspec test directories
       file:
         path: "{{ inspec_test_directory }}/{{ item.path }}"
