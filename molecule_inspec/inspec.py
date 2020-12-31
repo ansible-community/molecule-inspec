@@ -127,13 +127,5 @@ class Inspec(Verifier):
         }
 
     def template_dir(self):
-        p = os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__),
-                "cookiecutter",
-                "scenario",
-                "verifier",
-                self.name,
-            )
-        )
+        p = os.path.abspath(os.path.join(os.path.dirname(__file__), "cookiecutter"))
         return p
