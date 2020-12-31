@@ -21,13 +21,116 @@ Molecule Inspec Plugin
    :target: LICENSE
    :alt: Repository License
 
-Molecule Inspec Plugin is designed to allow used of inspec as a verifier.
+Molecule Inspec Plugin is designed to allow use of inspec as a verifier.
+The initialization of a role or scenario with the inspec verifier configures a
+Verify playbook which installs inspec, copies the tests, and executes inspec on
+the instance.
 
 Documentation
 =============
 
-Read the documentation and more at https://molecule.readthedocs.io/.
+.. _installation-and-usage:
 
+Installation and Usage
+======================
+
+Install molecule-inspec and pre-requisites:
+
+.. code-block::
+
+   pip install molecule molecule-inspec
+
+Create a new role with molecule using the inspec verifier:
+
+.. code-block::
+
+   molecule init role <role_name> --verifier-name inspec
+
+Configure ``<role_name>/molecule/default/tests/`` with the desired inspec
+tests. A simple default test is provided:
+
+.. code-block::
+
+   # frozen_string_literal: true
+
+   # Molecule managed
+
+   describe file('/etc/hosts') do
+   its('owner') { should eq 'root' }
+   its('group') { should eq 'root' }
+   its('mode') { should cmp '0644' }
+   end
+
+Execute `test` or `verify` on the role or scenario to run the Verify playbook
+
+.. code-block::
+
+   /inspec-role/molecule/default/molecule.yml.
+   INFO     default scenario test matrix: verify
+   INFO     Running default > verify
+   INFO     Executing Inspec tests found in
+   /inspec-role/molecule/default/tests/...
+   INFO     Sanity checks: 'docker'
+
+   PLAY [Verify] ******************************************************************
+
+   TASK [Gathering Facts] *********************************************************
+   ok: [instance]
+
+   TASK [Setting variables (CentOS 7 / RHEL 7 / Amazon Linux 2)] ******************
+   ok: [instance]
+
+   TASK [Download Inspec] *********************************************************
+   changed: [instance]
+
+   TASK [Install Inspec (yum)] ****************************************************
+   changed: [instance]
+
+   TASK [Create inspec test directory] ********************************************
+   changed: [instance]
+
+   TASK [Copy inspec test directories] ********************************************
+   skipping: [instance] => (item={'root':
+   '/inspec-role/molecule/default/tests/', 'path': 'test_default.rb', 'state': 'file',
+   'src': '/inspec-role/molecule/default/tests/test_default.rb', 'uid': 501, 'gid': 20,
+   'owner': 'abtreece', 'group': 'staff', 'mode': '0644', 'size': 194,
+   'mtime': 1609387140.054121, 'ctime': 1609387140.054233})
+
+   TASK [Copy inspec test files] **************************************************
+   changed: [instance] => (item={'root':
+   '/inspec-role/molecule/default/tests/', 'path': 'test_default.rb', 'state': 'file',
+   'src': '/inspec-role/molecule/default/tests/test_default.rb', 'uid': 501, 'gid': 20,
+   'owner': 'abtreece', 'group': 'staff', 'mode': '0644', 'size': 194,
+   'mtime': 1609387140.054121, 'ctime': 1609387140.054233})
+
+   TASK [Execute Inspec tests] ****************************************************
+   changed: [instance]
+
+   TASK [Display details about the Inspec results] ********************************
+   ok: [instance] => {
+      "msg": [
+         "",
+         "Profile: tests from /tmp/molecule/inspec (tests from .tmp.molecule.inspec)",
+         "Version: (not specified)",
+         "Target:  local://",
+         "",
+         "  File /etc/hosts",
+         "\u001b[38;5;41m     ✔  owner should eq \"root\"\u001b[0m",
+         "\u001b[38;5;41m     ✔  group should eq \"root\"\u001b[0m",
+         "\u001b[38;5;41m     ✔  mode should cmp == \"0644\"\u001b[0m",
+         "",
+         "Test Summary: \u001b[38;5;41m3 successful\u001b[0m, 0 failures, 0 skipped"
+      ]
+   }
+
+   TASK [Fail when tests fail] ****************************************************
+   skipping: [instance]
+
+   PLAY RECAP *********************************************************************
+   instance: ok=8    changed=5    unreachable=0    failed=0    skipped=7    rescued=0
+   ignored=0
+
+   INFO     Verifier completed successfully.
 
 .. _get-involved:
 
