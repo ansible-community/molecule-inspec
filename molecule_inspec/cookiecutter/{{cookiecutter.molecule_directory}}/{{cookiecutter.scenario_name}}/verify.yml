@@ -14,38 +14,38 @@
         - name: Setting variables (CentOS 6 / RHEL 6 / Amazon Linux 2018)
           set_fact:
             inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/el/6/inspec-3.9.3-1.el6.x86_64.rpm"
-            inspec_download_sha256sum: sha256:36c8605f3c1a85acd4e2d54ab01b2737832af41126e307fece7989c6332ae534
+            inspec_download_shasha256: sha256:36c8605f3c1a85acd4e2d54ab01b2737832af41126e307fece7989c6332ae534
           when: (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "6" or ansible_facts['distribution_major_version'] == "2018"))
 
         - name: Setting variables (CentOS 7 / RHEL 7 / Amazon Linux 2)
           set_fact:
             inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/el/7/inspec-3.9.3-1.el7.x86_64.rpm"
-            inspec_download_sha256sum: sha256:4d54d12899c2eeaae4812cd13b8dfcae01ec1fd4a44f00cab77e31a57aea502b
+            inspec_download_shasha256: sha256:4d54d12899c2eeaae4812cd13b8dfcae01ec1fd4a44f00cab77e31a57aea502b
           when: (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "7" or ansible_facts['distribution_major_version'] == "2"))
 
         - name: Setting variables (Debian 8 / Ubuntu 14.04)
           set_fact:
             inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/14.04/inspec_3.9.3-1_amd64.deb"
-            inspec_download_sha256sum: sha256:fe29d35fb95916b15310dc58787e63f22c4524be36a5c181307e08090cb0877d
+            inspec_download_shasha256: sha256:fe29d35fb95916b15310dc58787e63f22c4524be36a5c181307e08090cb0877d
           when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "14"))
 
         - name: Setting variables (Debian 8 / Ubuntu 16.04)
           set_fact:
             inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/16.04/inspec_3.9.3-1_amd64.deb"
-            inspec_download_sha256sum: sha256:757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
+            inspec_download_shasha256: sha256:757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
           when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "16"))
 
         - name: Setting variables (Debian 9 / Ubuntu 18.04)
           set_fact:
             inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/18.04/inspec_3.9.3-1_amd64.deb"
-            inspec_download_sha256sum: sha256:757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
+            inspec_download_shasha256: sha256:757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
           when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] == "18"))
 
         - name: Download Inspec
           get_url:
             url: "{{ inspec_download_url }}"
             dest: "{{ inspec_download_source_dir }}"
-            checksum: "{{ inspec_download_sha256sum }}"
+            checksum: "{{ inspec_download_shasha256 }}"
             mode: 0755
 
         - name: Install Inspec (apt)
