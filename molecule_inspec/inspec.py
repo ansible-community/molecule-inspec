@@ -36,7 +36,7 @@ class Inspec(Verifier):
     requirements become automated tests throughout all stages of the software
     delivery process. `Inspec`_ is `not` the default verifier used in Molecule.
     Molecule executes a playbook (`verify.yml`) located in the role's
-    `scenario.directory`.  This playbook will copy test files to the instances,
+    `scenario.directory`. This playbook will copy test files to the instances,
     and execute Inspec locally over Ansible.  Molecule executes Inspec over an
     Ansible transport, in an attempt to provide Inspec support across all
     Molecule drivers.
@@ -71,13 +71,12 @@ class Inspec(Verifier):
         :return: None
         """
         super(Inspec, self).__init__(config)
-        self.default_linter = 'rubocop'
         if config:
             self._tests = self._get_tests()
 
     @property
     def name(self):
-        return 'inspec'
+        return "inspec"
 
     @property
     def default_options(self):
@@ -92,53 +91,41 @@ class Inspec(Verifier):
 
     def execute(self):
         if not self.enabled:
-            msg = 'Skipping, verifier is disabled.'
-            LOG.warn(msg)
+            msg = "Skipping, verifier is disabled."
+            LOG.warning(msg)
             return
 
         if not len(self._tests) > 0:
-            msg = 'Skipping, no tests found.'
-            LOG.warn(msg)
+            msg = "Skipping, no tests found."
+            LOG.warning(msg)
             return
 
-        msg = 'Executing Inspec tests found in {}/...'.format(self.directory)
+        msg = "Executing Inspec tests found in {}/...".format(self.directory)
         LOG.info(msg)
 
         self._config.provisioner.verify()
 
-        msg = 'Verifier completed successfully.'
-        LOG.success(msg)
+        msg = "Verifier completed successfully."
+        LOG.info(msg)
 
     def _get_tests(self):
         """
         Walk the verifier's directory for tests and returns a list.
         :return: list
         """
-        return [filename for filename in util.os_walk(self.directory, 'test_*.rb')]
+        return [filename for filename in util.os_walk(self.directory, "*.rb")]
 
     def schema(self):
         return {
-            'verifier': {
-                'type': 'dict',
-                'schema': {
-                    'name': {'type': 'string', 'allowed': ['inspec']},
-                    'lint': {
-                        'type': 'dict',
-                        'schema': {'name': {'type': 'string', 'allowed': ['rubocop']}},
-                    },
-                    'options': {'keysrules': {'readonly': True}},
+            "verifier": {
+                "type": "dict",
+                "schema": {
+                    "name": {"type": "string", "allowed": ["inspec"]},
+                    "options": {"keysrules": {"readonly": True}},
                 },
             }
         }
 
     def template_dir(self):
-        p = os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__),
-                "cookiecutter",
-                "scenario",
-                "verifier",
-                self.name,
-            )
-        )
+        p = os.path.abspath(os.path.join(os.path.dirname(__file__), "cookiecutter"))
         return p
