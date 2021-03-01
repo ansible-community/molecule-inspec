@@ -8,35 +8,40 @@
     inspec_download_source_dir: /usr/local/src
     inspec_test_directory: /tmp/molecule/inspec
   tasks:
+    - name: Check if Inspec is pre-installed
+      stat:
+        path: "{{ inspec_bin }}"
+      register: pre_installed
+
     - name: Setting variables (CentOS 6 / RHEL 6 / Amazon Linux 2018)
       set_fact:
         inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/el/6/inspec-3.9.3-1.el6.x86_64.rpm"
         inspec_download_sha256sum: 36c8605f3c1a85acd4e2d54ab01b2737832af41126e307fece7989c6332ae534
-      when: (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "6" or ansible_facts['distribution_major_version'] == "2018"))
+      when: (pre_installed.stat.exists == False and (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "6" or ansible_facts['distribution_major_version'] == "2018")))
 
     - name: Setting variables (CentOS 7 / RHEL 7 / Amazon Linux 2)
       set_fact:
         inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/el/7/inspec-3.9.3-1.el7.x86_64.rpm"
         inspec_download_sha256sum: 4d54d12899c2eeaae4812cd13b8dfcae01ec1fd4a44f00cab77e31a57aea502b
-      when: (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "7" or ansible_facts['distribution_major_version'] == "2"))
+      when: (pre_installed.stat.exists == False and (ansible_facts['os_family'] == "RedHat" and (ansible_facts['distribution_major_version'] == "7" or ansible_facts['distribution_major_version'] == "2")))
 
     - name: Setting variables (Debian 8 / Ubuntu 14.04)
       set_fact:
         inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/14.04/inspec_3.9.3-1_amd64.deb"
         inspec_download_sha256sum: fe29d35fb95916b15310dc58787e63f22c4524be36a5c181307e08090cb0877d
-      when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "14"))
+      when: (pre_installed.stat.exists == False and (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "14")))
 
     - name: Setting variables (Debian 8 / Ubuntu 16.04)
       set_fact:
         inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/16.04/inspec_3.9.3-1_amd64.deb"
         inspec_download_sha256sum: 757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
-      when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "16"))
+      when: (pre_installed.stat.exists == False and (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution_major_version'] == "16")))
 
     - name: Setting variables (Debian 9 / Ubuntu 18.04)
       set_fact:
         inspec_download_url: "https://packages.chef.io/files/stable/inspec/3.9.3/ubuntu/18.04/inspec_3.9.3-1_amd64.deb"
         inspec_download_sha256sum: 757dd2366a3932adc5fcc9382b30d77de6cc33152585f4c9f94f8918d9d349a7
-      when: (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] == "18"))
+      when: (pre_installed.stat.exists == False and (ansible_facts['os_family'] == "Debian" and (ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] == "18")))
 
     - name: Download Inspec
       get_url:
@@ -44,18 +49,19 @@
         dest: "{{ inspec_download_source_dir }}"
         sha256sum: "{{ inspec_download_sha256sum }}"
         mode: 0755
+      when: pre_installed.stat.exists == False
 
     - name: Install Inspec (apt)
       apt:
         deb: "{{ inspec_download_source_dir }}/{{ inspec_download_url.split('/')[-1] }}"
         state: present
-      when: ansible_pkg_mgr == "apt"
+      when: (pre_installed.stat.exists == False and ansible_pkg_mgr == "apt")
 
     - name: Install Inspec (yum)
       yum:
         name: "{{ inspec_download_source_dir }}/{{ inspec_download_url.split('/')[-1] }}"
         state: present
-      when: ansible_pkg_mgr == "yum"
+      when: (pre_installed.stat.exists == False and ansible_pkg_mgr == "yum")
 
     - name: Create inspec test directory
       file:
@@ -82,6 +88,8 @@
       command: "{{ inspec_bin }} exec {{ inspec_test_directory }}"
       register: test_results
       ignore_errors: true
+      environment:
+        CHEF_LICENSE: "{{ lookup('env', 'CHEF_LICENSE') }}"
 
     - name: Display details about the Inspec results
       debug:
