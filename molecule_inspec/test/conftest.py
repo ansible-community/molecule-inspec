@@ -11,8 +11,14 @@ LOG = logger.get_logger(__name__)
 
 
 @pytest.fixture
+def VERIFIER():
+    """Return name of the verifier to be tested."""
+    return "inspec"
+
+
+@pytest.fixture
 def driver_name():
-    """Return name of the driver to be tested."""
+    """Return name of the driver to use for testing."""
     return "docker"
 
 
@@ -52,5 +58,5 @@ def with_scenario(request, scenario_to_test, driver_name, scenario_name):
         if scenario_name:
             msg = "CLEANUP: Destroying instances for all scenario(s)"
             LOG.info(msg)
-            cmd = ["molecule", "destroy", "--driver-name", driver_name, "--all"]
-            assert run_command(cmd).returncode == 0
+            #cmd = ["molecule", "destroy", "--driver-name", driver_name, "--all"]
+            #assert run_command(cmd).returncode == 0
