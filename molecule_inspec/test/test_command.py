@@ -3,6 +3,7 @@ import subprocess
 
 import pytest
 from molecule import logger
+from molecule.test.conftest import change_dir_to
 from molecule.util import run_command
 
 
@@ -33,9 +34,16 @@ def format_result(result: subprocess.CompletedProcess):
     )
 
 
-def test_command_init_role_inspec_verifier(temp_dir):
+def test_command_init_role_inspec_verifier(temp_dir, VERIFIER: str):
     """Verify that init scenario works."""
-    cmd = ["molecule", "init", "role", "test-init", "--verifier-name", "inspec"]
+    cmd = [
+        "molecule",
+        "init",
+        "role",
+        "acme.testrole",
+        "--verifier-name",
+        VERIFIER,
+    ]
     assert run_command(cmd).returncode == 0
 
 
@@ -43,10 +51,10 @@ def test_command_init_role_inspec_verifier(temp_dir):
 @pytest.mark.parametrize(
     "scenario_to_test, driver_name, scenario_name",
     [("docker/centos7", "docker", "default")],
-    #    indirect=["scenario_to_test", "driver_name", "scenario_name"],
+    indirect=["scenario_to_test", "driver_name", "scenario_name"],
 )
 def test_command_scenario_centos7(scenario_to_test, with_scenario, scenario_name):
-    cmd = ["molecule", "test", "--scenario-name", scenario_name]
+    cmd = ["molecule", "test"]
     assert run_command(cmd).returncode == 0
 
 
@@ -54,8 +62,8 @@ def test_command_scenario_centos7(scenario_to_test, with_scenario, scenario_name
 @pytest.mark.parametrize(
     "scenario_to_test, driver_name, scenario_name",
     [("docker/ubuntu18.04", "docker", "default")],
-    #    indirect=["scenario_to_test", "driver_name", "scenario_name"],
+    indirect=["scenario_to_test", "driver_name", "scenario_name"],
 )
 def test_command_scenario_ubuntu18(scenario_to_test, with_scenario, scenario_name):
-    cmd = ["molecule", "test", "--scenario-name", scenario_name]
+    cmd = ["molecule", "test"]
     assert run_command(cmd).returncode == 0
