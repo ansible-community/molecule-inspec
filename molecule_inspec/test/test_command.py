@@ -50,9 +50,7 @@ def test_command_init_role_inspec_verifier(temp_dir, VERIFIER: str):
 @pytest.mark.extensive
 @pytest.mark.parametrize(
     "scenario_to_test, driver_name, scenario_name",
-    [
-        ("docker/centos7", "docker", "default")
-    ],
+    [("docker/centos7", "docker", "default")],
     indirect=["scenario_to_test", "driver_name", "scenario_name"],
 )
 def test_command_scenario_centos7(scenario_to_test, with_scenario, scenario_name):
@@ -63,9 +61,7 @@ def test_command_scenario_centos7(scenario_to_test, with_scenario, scenario_name
 @pytest.mark.extensive
 @pytest.mark.parametrize(
     "scenario_to_test, driver_name, scenario_name",
-    [
-        ("docker/ubuntu18.04", "docker", "default")
-    ],
+    [("docker/ubuntu18.04", "docker", "default")],
     indirect=["scenario_to_test", "driver_name", "scenario_name"],
 )
 def test_command_scenario_ubuntu18(scenario_to_test, with_scenario, scenario_name):
